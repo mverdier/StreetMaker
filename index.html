@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Road Designer</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #map {
+            width: 100vw;
+            height: 100vh;
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Control Panel -->
+    <div id="editor-controls">
+        <button id="btn-new-line" class="control-button" title="New Line">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vert">
+                <path d="M3 17l6-6 6 6 6-6" />
+                <circle cx="3" cy="17" r="2.5" fill="currentColor" />
+                <circle cx="9" cy="11" r="2.5" fill="currentColor" />
+                <circle cx="15" cy="17" r="2.5" fill="currentColor" />
+                <circle cx="21" cy="11" r="2.5" fill="currentColor" />
+            </svg>
+        </button>
+        <button id="btn-new-markings" class="control-button" title="Create Markings">🖌️</button>
+        <button id="btn-new-single-point" class="control-button" title="Create Single Point">📍</button>
+        <button id="btn-new-poly" class="control-button" title="New Polygon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vert">
+                <path d="M12 3l9 6-3 12H6L3 9z" />
+                <circle cx="12" cy="3" r="2" fill="currentColor" />
+                <circle cx="21" cy="9" r="2" fill="currentColor" />
+                <circle cx="18" cy="21" r="2" fill="currentColor" />
+                <circle cx="6" cy="21" r="2" fill="currentColor" />
+                <circle cx="3" cy="9" r="2" fill="currentColor" />
+            </svg>
+        </button>
+        <button id="btn-rect-select" class="control-button" title="Rectangle Select">🔲</button>
+        <button id="btn-measure" class="control-button" title="Measure">📏</button>
+        <button id="btn-split" class="control-button" title="Split Line">✂️</button>
+        <button id="btn-import" class="control-button" title="Import GeoJSON">📤</button>
+        <button id="btn-export" class="control-button" title="Export GeoJSON">📥</button>
+        <button id="btn-settings" class="control-button" title="Settings">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+        </button>
+
+        <input type="file" id="file-input-geojson" accept=".geojson,application/json" style="display: none;" />
+    </div>
+
+    <!-- Line Creation Config Panel -->
+    <div id="line-creation-panel" class="creation-panel">
+        <h3 class="panel-title">Configure Line</h3>
+
+        <div class="intermediate-option">
+            <label class="option-label">Infrastructure Type</label>
+            <select id="panel-type" class="panel-type-selection">
+                <option value="bicycle_path">Bicycle Path</option>
+                <option value="roadway">Roadway</option>
+                <option value="pedestrian_crossing">Pedestrian Crossing</option>
+                <option value="priority_line">Priority Line</option>
+                <option value="stop_line">Stop Line</option>
+                <option value="shark_teeth">Shark Teeth</option>
+            </select>
+        </div>
+
+        <div class="intermediate-option">
+            <label class="option-label"><input type="checkbox" id="panel-double" /> Double track</label>
+        </div>
+
+        <div class="intermediate-option">
+            <label class="option-label"><input type="checkbox" id="panel-smooth"> Smooth geometry</label>
+        </div>
+
+        <div class="intermediate-option">
+            <label class="option-label">Width (meters)</label>
+            <input id="panel-width" type="number" step="0.1" min="0.1" max="20" class="panel-width" />
+        </div>
+
+        <div class="last-option">
+            <label class="option-label">Color (Hex)</label>
+            <div class="color-panel">
+                <input id="panel-color-picker" type="color" class="panel-color-picker" />
+                <input id="panel-color-hex" type="text" class="panel-color-hex" />
+            </div>
+        </div>
+
+        <div class="panel-buttons">
+            <button id="panel-btn-cancel" class="panel-cancel-button">Cancel</button>
+            <button id="panel-btn-confirm" class="panel-confirm-button">Start Drawing</button>
+        </div>
+    </div>
+
+    <!-- Polygon Creation Config Panel -->
+    <div id="poly-creation-panel" class="creation-panel">
+        <h3 class="panel-title">Configure Polygon</h3>
+
+        <div class="intermediate-option">
+            <label class="option-label">Infrastructure Type</label>
+            <select id="poly-panel-type" class="panel-type-selection">
+                <option value="sidewalk">Sidewalk</option>
+            </select>
+        </div>
+
+        <div class="intermediate-option">
+            <label class="option-label"><input type="checkbox" id="poly-panel-smooth"> Smooth geometry</label>
+        </div>
+
+        <div class="last-option" >
+            <label class="option-label">Color (Hex)</label>
+            <div class="color-panel">
+                <input id="poly-panel-color-picker" type="color" class="panel-color-picker" />
+                <input id="poly-panel-color-hex" type="text" class="panel-color-hex" />
+            </div>
+        </div>
+
+        <div class="panel-buttons">
+            <button id="poly-panel-btn-cancel" class="panel-cancel-button">Cancel</button>
+            <button id="poly-panel-btn-confirm" class="panel-confirm-button">Start Drawing</button>
+        </div>
+    </div>
+
+    <!-- Opacity Control Box -->
+    <div id="opacity-control-panel">
+        <label for="opacity-slider" class="option-label">Opacity</label>
+        <div id="opacity-container">
+            <input id="opacity-slider" type="range" min="0" max="1" step="0.05" value="1" />
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settings-panel" class="creation-panel">
+        <h3 class="panel-title">Settings</h3>
+
+        <div class="last-option">
+            <label class="option-label"><input type="checkbox" id="toggle-labels" checked /> Labels</label>
+        </div>
+
+        <div class="panel-buttons">
+            <button id="settings-btn-close" class="panel-cancel-button">Close</button>
+        </div>
+    </div>
+
+    <!-- Inspector Panel -->
+    <div id="inspector-panel">
+        <h3 class="panel-title">Road Inspector</h3>
+        <div id="active-feature">
+            <span id="inspector-feature-id"></span>
+        </div>
+
+        <div class="intermediate-option" id="inspector-type-container">
+            <label class="option-label" for="inspector-type">Infrastructure Type</label>
+            <select id="inspector-type" class="panel-type-selection">
+                <option value="bicycle_path">Bicycle Path</option>
+                <option value="roadway">Roadway</option>
+                <option value="pedestrian_crossing">Pedestrian Crossing</option>
+                <option value="priority_line">Priority Line</option>
+                <option value="stop_line">Stop Line</option>
+                <option value="shark_teeth">Shark Teeth</option>
+            </select>
+        </div>
+
+        <div class="intermediate-option">
+            <label class="option-label"><input type="checkbox" id="inspector-double" /> Double track</label>
+        </div>
+
+        <div class="intermediate-option" id="inspector-smooth-row">
+            <label class="option-label"><input type="checkbox" id="inspector-smooth" > Smooth geometry</label>
+        </div>
+
+        <div class="intermediate-option">
+            <label class="option-label">Width (meters)</label>
+            <input id="inspector-width" type="number" step="0.1" min="0.5" max="30" class="panel-width" />
+        </div>
+
+        <div class="inspector-row" id="inspector-rotation-row">
+            <label>Rotation: <span id="inspector-rotation-val">0</span>°</label>
+            <input type="range" id="inspector-rotation" min="0" max="360" step="1" value="0">
+        </div>
+
+        <div class="intermediate-option">
+            <label class="option-label">Color (Hex)</label>
+            <div class="color-panel">
+                <input id="inspector-color-picker" type="color" class="panel-color-picker" />
+                <input id="inspector-color-hex" type="text" class="panel-color-hex" />
+            </div>
+        </div>
+
+        <div class="last-option layer-order-controls">
+            <label class="option-label">Display Hierarchy</label>
+            <div class="button-group">
+                <button id="btn-move-up" title="Move Higher (Bring Forward)">▲</button>
+                <button id="btn-move-down" title="Move Lower (Send Backward)">▼</button>
+            </div>
+        </div>
+
+        <div class="panel-buttons">
+            <button id="inspector-btn-delete" class="panel-delete-button">Delete Feature</button>
+            <button id="inspector-btn-close" class="panel-cancel-button">Deselect</button>
+        </div>
+    </div>
+
+    <!-- Single point creation panel -->
+    <div id="single-point-creation-panel" class="creation-panel">
+        <h3 class="panel-title">Create Single Point</h3>
+
+        <div class="intermediate-option">
+            <label class="option-label">Infrastructure Type</label>
+            <select id="single-point-panel-type" class="panel-type-selection">
+                <option value="left">Arrow left</option>
+            </select>
+        </div>
+
+        <div class="intermediate-option">
+            <label class="option-label">Width (m)</label>
+            <input type="number" id="single-point-panel-width" value="1.5" min="0.1" max="10" step="0.1" class="panel-width">
+        </div>
+
+        <div class="last-option">
+            <label class="option-label">Color (Hex)</label>
+            <div class="color-panel">
+                <input id="single-point-panel-color-picker" type="color" class="panel-color-picker" />
+                <input id="single-point-panel-color-hex" type="text" class="panel-color-hex" />
+            </div>
+        </div>
+
+        <div class="panel-buttons">
+            <button id="single-point-panel-btn-cancel" class="panel-cancel-button">Cancel</button>
+            <button id="single-point-panel-btn-confirm" class=panel-confirm-button>Start Drawing</button>
+        </div>
+    </div>
+
+    <div id="welcome-modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <button id="welcome-close-btn" class="modal-close">&times;</button>
+            <div id="welcome-modal-body">
+                <h2>Thanks for trying out the alpha version of Street Maker :)</h2>
+                <h5>(The name is not final)</h5>
+                <p>First off, I would absolutely love to hear any feedback, positive or negative, about the tool.
+                    It would be great to understand your frustrations, what you thought could be better, what is
+                    missing, what could make it easier or more enjoyable. Please send me a message directly via
+                    whichever way I sent you this through, or directly at mart[dot]verdier at Gmail!</p>
+                <hr>
+                <p>This is all pretty barebones for now, and it's nowhere near finished, but I think the product is,
+                generally, in a usable state.</p>
+                <p>⚠️ For the best experience of the tool in its current state, here's some tips:</p>
+                <ul>
+                    <li>Save your work often! There are import and export buttons on the left. If the page
+                        refreshes for any reason, you will lose your work. I want to find a way to solve that,
+                        too</li>
+                    <li>In the settings, you can toggle labels on and off</li>
+                    <li>You can click on any line to edit it. Lines are not <i>actually</i> smooth, they are just
+                        a series of points, so you're better off clicking on the start or end points to "find" it</li>
+                    <li>There is no ctrl+Z yet, bear that in mind if you accidentally delete something</li>
+                    <li>You can hit L for directly making a bike path, and R for a roadway. You can edit their
+                        properties after you're done drawing them</li>
+                </ul>
+                <hr>
+                <p>There are a lot of UI/UX changes, especially thinking of quality of life, that I want to make. A lot
+                of the interactions feel a bit clunky and repetitive, but this will get better. Some things I already
+                plan on improving:</p>
+                <ul>
+                    <li>Custom preset colours/widths, so that they stay the same every time. Currently, they reset once
+                        you change infra types</li>
+                    <li>Saving some infra configs as "quick links", which can be clicked once to start drawing, instead
+                        of going through the menu every time</li>
+                    <li>Satellite map layers swapping</li>
+                    <li>New types of infrastructure to be more versatile. Right now, changing colours on lines and
+                        polygons already allows a lot of creativity, but I want it more "properly" layered</li>
+                    <li>Language support. Sorry, non-English speakers, not yet :(</li>
+                    <li>Snapping lines to each other</li>
+                    <li>More "single point" bits of infra. Trees, bike logos, etc</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
