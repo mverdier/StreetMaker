@@ -405,3 +405,53 @@ kbd {
     font-size: 16px;
     color: #666;
 }
+
+.control-button {
+    position: relative;
+}
+
+.control-button::before,
+.control-button::after {
+    content: '';
+    position: absolute;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
+    z-index: 10000;
+    pointer-events: none;
+}
+
+.control-button::before {
+    content: attr(data-tooltip);
+    left: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%) translateX(-4px);
+    background: rgba(15, 23, 42, 0.92);
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-family: system-ui, -apple-system, sans-serif;
+    line-height: 1.4;
+    white-space: pre-wrap; /* Respects line breaks (&#10;) to separate name and usage */
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+    text-align: left;
+    width: max-content;
+    max-width: 230px;
+}
+
+.control-button::after {
+    left: calc(100% + 4px);
+    top: 50%;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-right-color: rgba(15, 23, 42, 0.92);
+}
+
+.control-button:hover::before,
+.control-button:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) translateX(0);
+}

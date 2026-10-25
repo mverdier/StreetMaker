@@ -22,7 +22,7 @@
 <body>
     <!-- Main Control Panel -->
     <div id="editor-controls">
-        <button id="btn-new-line" class="control-button" title="New Line">
+        <button id="btn-new-line" class="control-button" data-tooltip="New Line&#10;Draw roads, bike paths, or lanes.">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vert">
                 <path d="M3 17l6-6 6 6 6-6" />
                 <circle cx="3" cy="17" r="2.5" fill="currentColor" />
@@ -31,9 +31,9 @@
                 <circle cx="21" cy="11" r="2.5" fill="currentColor" />
             </svg>
         </button>
-        <button id="btn-new-markings" class="control-button" title="Create Markings">🖌️</button>
-        <button id="btn-new-single-point" class="control-button" title="Create Single Point">📍</button>
-        <button id="btn-new-poly" class="control-button" title="New Polygon">
+        <button id="btn-new-markings" class="control-button" data-tooltip="Create markings&#10;Add crosswalks, lines, and other road markings.">🖌️</button>
+        <button id="btn-new-single-point" class="control-button" data-tooltip="Create single Point&#10;Place directional arrows, or other self-standing markers.">📍</button>
+        <button id="btn-new-poly" class="control-button" data-tooltip="New polygon&#10;Draw sidewalks, medians, or custom filled areas.">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vert">
                 <path d="M12 3l9 6-3 12H6L3 9z" />
                 <circle cx="12" cy="3" r="2" fill="currentColor" />
@@ -43,12 +43,12 @@
                 <circle cx="3" cy="9" r="2" fill="currentColor" />
             </svg>
         </button>
-        <button id="btn-rect-select" class="control-button" title="Rectangle Select">🔲</button>
-        <button id="btn-measure" class="control-button" title="Measure">📏</button>
-        <button id="btn-split" class="control-button" title="Split Line">✂️</button>
-        <button id="btn-import" class="control-button" title="Import GeoJSON">📤</button>
-        <button id="btn-export" class="control-button" title="Export GeoJSON">📥</button>
-        <button id="btn-settings" class="control-button" title="Settings">
+        <button id="btn-rect-select" class="control-button" data-tooltip="Rectangle select&#10;Click once for the first point, and again for the second.">🔲</button>
+        <button id="btn-measure" class="control-button" data-tooltip="Measure distances">📏</button>
+        <button id="btn-split" class="control-button" data-tooltip="Cut a line segment into two.">✂️</button>
+        <button id="btn-import" class="control-button" data-tooltip="Import GeoJSON&#10;Load an existing project file into the editor.">📤</button>
+        <button id="btn-export" class="control-button" data-tooltip="Export GeoJSON&#10;Save your project to a file.">📥</button>
+        <button id="btn-settings" class="control-button" data-tooltip="Settings">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
