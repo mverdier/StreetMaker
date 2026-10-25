@@ -304,6 +304,27 @@ class RoadEditor {
             }
             this.extensionHandleManager.setSelectedFeatureId(this.selectedFeatureId);
         });
+
+        const canvas = this.map.getCanvas();
+
+        canvas.addEventListener('mousedown', (e: MouseEvent) => {
+            if (e.button === 2) {
+                const currentMode = this.draw.getMode();
+                if (currentMode && currentMode.startsWith('draw_')) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    this.stopDrawing();
+                }
+            }
+        }, { capture: true });
+
+        canvas.addEventListener('contextmenu', (e: MouseEvent) => {
+            const currentMode = this.draw.getMode();
+            if (currentMode && currentMode.startsWith('draw_')) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+        }, { capture: true });
     }
 
     private init(): void {
