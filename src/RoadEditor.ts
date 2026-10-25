@@ -17,7 +17,6 @@ import {
     getRoadStyles,
     getExtensionHandleLayers,
     getNativePolygonLayerSpec,
-    getNativePolygonOutlineLayerSpec,
     getNativePedestrianCrossingLayerSpec,
     getNativeSquareMarkingsLayerSpec,
     getNativeContinuousLineLayerSpec,
@@ -204,7 +203,6 @@ class RoadEditor {
 
     private setupCoreLayers(pxPerMeterZoom20: number): void {
         this.map.addLayer(getNativePolygonLayerSpec());
-        this.map.addLayer(getNativePolygonOutlineLayerSpec());
 
         this.map.addLayer(getNativeRoadLayerSpec(pxPerMeterZoom20));
         this.map.addLayer(getNativeRoadCenterlineLayerSpec(pxPerMeterZoom20));
