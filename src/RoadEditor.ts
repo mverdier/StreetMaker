@@ -256,6 +256,11 @@ class RoadEditor {
     }
 
     private setupDrawEventHandlers(): void {
+        this.map.on('click', () => {
+            if (this.panelManager && this.panelManager.confirmOpenPanel()) {
+                return;
+            }
+        });
         this.map.on('draw.create' as any, (e: any) => {
             this.handleCreate(e);
             this.extensionHandleManager.updateHandles();
@@ -432,6 +437,15 @@ class RoadEditor {
         });
     }
 
+    private setDrawingCursorActive(active: boolean): void {
+        const container = this.map.getContainer();
+        if (active) {
+            container.classList.add('drawing-mode');
+        } else {
+            container.classList.remove('drawing-mode');
+        }
+    }
+
     private updateSelectedFeatureProperty(key: string, value: any): void {
         if (!this.selectedFeatureId || value === null || value === undefined || value === '') return;
 
@@ -480,6 +494,8 @@ class RoadEditor {
         widthMeters: number,
         rotation: number
     ): void {
+        this.setDrawingCursorActive(true);
+
         let iconName = '';
         if (type === 'arrow_left') {
             iconName = 'arrow-left-icon';
@@ -510,6 +526,8 @@ class RoadEditor {
     }
 
     public startDrawingWithConfig(type: LineInfrastructureType, color: string, widthMeters: number, isDouble: boolean, smooth: boolean): void {
+        this.setDrawingCursorActive(true);
+
         this.activeConfig = { infrastructureType: type, color, widthMeters, isDouble, smooth, zIndex: 50 };
         this.updateActiveLayerPaint(color, widthMeters);
         this.draw.changeMode('draw_line_string');
@@ -525,6 +543,8 @@ class RoadEditor {
     }
 
     public startDrawingRoad(type: LineInfrastructureType = 'bicycle_path'): void {
+        this.setDrawingCursorActive(true);
+
         this.activeLineinfrastructureType = type;
         this.draw.changeMode('draw_line_string');
         const spec = LINE_INFRASTRUCTURE_SPECS[type];
@@ -550,6 +570,8 @@ class RoadEditor {
     }
 
     public startDrawingPolygonWithConfig(type: PolygonInfrastructureType, color: string, smooth: boolean): void {
+        this.setDrawingCursorActive(true);
+
         this.activePolygonConfig = { infrastructureType: type, color, smooth, zIndex: 50 };
         this.draw.changeMode('draw_polygon');
 
@@ -564,6 +586,7 @@ class RoadEditor {
 
     public stopDrawing(): void {
         this.draw.changeMode('simple_select');
+        this.setDrawingCursorActive(false);
     }
 
     private handleModeChange(e: { mode: string }): void {
@@ -768,6 +791,7 @@ class RoadEditor {
         this.measureTool.deactivate();
         this.splitTool.deactivate();
         this.rectSelectTool.deactivate();
+        this.setDrawingCursorActive(false);
     }
 
     private handleLineExtension(featureIdToExtend: string, handleType: 'start' | 'end'): void {

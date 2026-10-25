@@ -89,4 +89,24 @@ export class PanelManager {
         this.settingsPanel.close();
         this.pointCreationPanel.close();
     }
+
+    public confirmOpenPanel(): boolean {
+        if (this.lineCreationPanel && this.lineCreationPanel.isOpen()) {
+            this.lineCreationPanel.confirm();
+            return true;
+        }
+        if (this.markingCreationPanel && this.markingCreationPanel.isOpen()) {
+            this.markingCreationPanel.confirm();
+            return true;
+        }
+        if (this.polyCreationPanel && this.polyCreationPanel.isOpen()) {
+            this.polyCreationPanel.confirm();
+            return true;
+        }
+        if (this.pointCreationPanel && this.pointCreationPanel.isOpen()) {
+            this.pointCreationPanel.confirm();
+            return true;
+        }
+        return false;
+    }
 }

@@ -11,6 +11,7 @@ export class PolyCreationPanel {
     private inputColorPicker: HTMLInputElement | null;
     private inputColorHex: HTMLInputElement | null;
     private inputSmooth: HTMLInputElement | null;
+    private callbacks: PolyCreationPanelCallbacks
 
     constructor(callbacks: PolyCreationPanelCallbacks) {
         this.panelEl = document.getElementById('poly-creation-panel');
@@ -18,6 +19,7 @@ export class PolyCreationPanel {
         this.inputColorPicker = document.getElementById('poly-panel-color-picker') as HTMLInputElement;
         this.inputColorHex = document.getElementById('poly-panel-color-hex') as HTMLInputElement;
         this.inputSmooth = document.getElementById('poly-panel-smooth') as HTMLInputElement;
+        this.callbacks = callbacks;
 
         this.populateSelectOptions();
         this.isolateEvents();
@@ -107,6 +109,19 @@ export class PolyCreationPanel {
     }
 
     public close(): void {
+        if (this.panelEl) this.panelEl.style.display = 'none';
+    }
+
+    public isOpen(): boolean {
+        return this.panelEl ? this.panelEl.style.display === 'block' : false;
+    }
+
+    public confirm(): void {
+        const type = (this.inputType?.value as PolygonInfrastructureType) || 'sidewalk';
+        const color = this.inputColorHex?.value || POLYGON_INFRASTRUCTURE_SPECS[type].color;
+        const smooth = this.inputSmooth?.checked || false;
+
+        this.callbacks.onConfirm({ infrastructureType: type, color, smooth });
         if (this.panelEl) this.panelEl.style.display = 'none';
     }
 }

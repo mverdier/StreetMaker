@@ -202,4 +202,30 @@ export class LineCreationPanel {
             delete this.panelEl.dataset.activeTrigger;
         }
     }
+
+    public isOpen(): boolean {
+        return this.panelEl ? this.panelEl.style.display === 'block' && this.panelEl.dataset.activeTrigger === this.triggerButtonId : false;
+    }
+
+    public confirm(): void {
+        if (!this.panelEl || this.panelEl.dataset.activeTrigger !== this.triggerButtonId) return;
+
+        const type = (this.inputType?.value as LineInfrastructureType) || this.allowedTypes[0];
+        const width = parseFloat(this.inputWidth?.value || '') || LINE_INFRASTRUCTURE_SPECS[type].widthMeters;
+        const color = this.inputColorHex?.value || LINE_INFRASTRUCTURE_SPECS[type].color;
+        const isDouble = MARKING_TYPES.includes(type) ? false : (this.inputDoubleTrack ? this.inputDoubleTrack.checked : false);
+        const smooth = this.inputSmooth ? this.inputSmooth.checked : LINE_INFRASTRUCTURE_SPECS[type].smooth;
+
+        this.lastConfig = {
+            infrastructureType: type,
+            widthMeters: width,
+            color,
+            isDouble,
+            smooth,
+        };
+
+        this.callbacks.onConfirm({ infrastructureType: type, color, widthMeters: width, isDouble, smooth });
+        this.panelEl.style.display = 'none';
+        delete this.panelEl.dataset.activeTrigger;
+    }
 }

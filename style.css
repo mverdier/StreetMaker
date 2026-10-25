@@ -455,3 +455,9 @@ kbd {
     visibility: visible;
     transform: translateY(-50%) translateX(0);
 }
+
+.drawing-mode .maplibregl-map,
+.drawing-mode .maplibregl-canvas-container,
+.drawing-mode .mapboxgl-canvas-container {
+    cursor: crosshair !important;
+}

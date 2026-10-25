@@ -11,6 +11,7 @@ export class PointCreationPanel {
     private inputColorPicker: HTMLInputElement | null;
     private inputColorHex: HTMLInputElement | null;
     private inputWidth: HTMLInputElement | null;
+    private callbacks: PointCreationPanelCallbacks;
 
     private lastConfig = {
         infrastructureType: 'arrow_forward' as PointInfrastructureType,
@@ -25,6 +26,7 @@ export class PointCreationPanel {
         this.inputColorPicker = document.getElementById('single-point-panel-color-picker') as HTMLInputElement;
         this.inputColorHex = document.getElementById('single-point-panel-color-hex') as HTMLInputElement;
         this.inputWidth = document.getElementById('single-point-panel-width') as HTMLInputElement;
+        this.callbacks = callbacks;
 
 
         this.populateSelectOptions();
@@ -114,6 +116,20 @@ export class PointCreationPanel {
     }
 
     public close(): void {
+        if (this.panelEl) this.panelEl.style.display = 'none';
+    }
+
+    public isOpen(): boolean {
+        return this.panelEl ? this.panelEl.style.display === 'block' : false;
+    }
+
+    public confirm(): void {
+        const type = (this.inputType?.value as PointInfrastructureType) || 'arrow_forward';
+        const color = this.inputColorHex?.value || POINT_INFRASTRUCTURE_SPECS[type].color;
+        const widthMeters = parseFloat(this.inputWidth?.value || '1.5') || 1.5;
+
+        this.lastConfig = { infrastructureType: type, color, widthMeters, rotation: 0 };
+        this.callbacks.onConfirm({ infrastructureType: type, color, widthMeters, rotation: 0 });
         if (this.panelEl) this.panelEl.style.display = 'none';
     }
 }
