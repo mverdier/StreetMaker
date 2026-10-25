@@ -21,7 +21,7 @@ export function getExtensionHandleLayers(): AddLayerObject[] {
             layout: {
                 'text-field': '+',
                 'text-size': 10,
-                'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+                'text-font': ['Open Sans Semibold'],
                 'text-allow-overlap': true,
             },
             paint: {
