@@ -82,7 +82,11 @@ export const LINE_INFRASTRUCTURE_SPECS: Record<LineInfrastructureType, LineInfra
 };
 
 // POLYGON INFRASTRUCTURE
-export type PolygonInfrastructureType = 'sidewalk';
+export type PolygonInfrastructureType =
+    | 'sidewalk'
+    | 'road_markings'
+    | 'grass'
+    | 'roadway';
 
 export interface PolygonInfrastructureConfig {
     color: string;
@@ -93,6 +97,21 @@ export interface PolygonInfrastructureConfig {
 export const POLYGON_INFRASTRUCTURE_SPECS: Record<PolygonInfrastructureType, PolygonInfrastructureConfig> = {
     sidewalk: {
         color: '#A39887',
+        fillOpacity: 1,
+        smooth: false
+    },
+    road_markings: {
+        color: '#ffffff',
+        fillOpacity: 1,
+        smooth: false
+    },
+    grass: {
+        color: '#138510',
+        fillOpacity: 1,
+        smooth: false
+    },
+    roadway: {
+        color: '#615D5C',
         fillOpacity: 1,
         smooth: false
     },

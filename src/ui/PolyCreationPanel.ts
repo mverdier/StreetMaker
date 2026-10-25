@@ -19,8 +19,26 @@ export class PolyCreationPanel {
         this.inputColorHex = document.getElementById('poly-panel-color-hex') as HTMLInputElement;
         this.inputSmooth = document.getElementById('poly-panel-smooth') as HTMLInputElement;
 
+        this.populateSelectOptions();
         this.isolateEvents();
         this.bindEvents(callbacks);
+    }
+
+    private populateSelectOptions(): void {
+        if (!this.inputType) return;
+        this.inputType.innerHTML = '';
+
+        Object.keys(POLYGON_INFRASTRUCTURE_SPECS).forEach((key) => {
+            const type = key as PolygonInfrastructureType;
+            const option = document.createElement('option');
+            option.value = type;
+            // Converts 'road_markings' -> 'Road Markings'
+            option.textContent = type
+                .split('_')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+            this.inputType?.appendChild(option);
+        });
     }
 
     private isolateEvents(): void {
@@ -49,14 +67,17 @@ export class PolyCreationPanel {
             if (isVisible) {
                 this.panelEl.style.display = 'none';
             } else {
-                if (this.inputType) this.inputType.value = 'sidewalk';
-                this.populateDefaults('sidewalk');
+                const defaultType = (Object.keys(POLYGON_INFRASTRUCTURE_SPECS)[0] as PolygonInfrastructureType) || 'sidewalk';
+                if (this.inputType) this.inputType.value = defaultType;
+                this.populateDefaults(defaultType);
                 this.panelEl.style.display = 'block';
             }
         });
 
         this.inputType?.addEventListener('change', () => {
-            if (this.inputType) this.populateDefaults(this.inputType.value as PolygonInfrastructureType);
+            if (this.inputType) {
+                this.populateDefaults(this.inputType.value as PolygonInfrastructureType);
+            }
         });
 
         this.inputColorPicker?.addEventListener('input', () => {
