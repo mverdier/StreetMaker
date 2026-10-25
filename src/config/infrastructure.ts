@@ -118,7 +118,7 @@ export const POLYGON_INFRASTRUCTURE_SPECS: Record<PolygonInfrastructureType, Pol
 };
 
 // SINGLE POINT INFRASTRUCTURE
-export type PointInfrastructureType = 'arrow_left' | 'arrow_forward' | 'arrow_right' | 'bus_label';
+export type PointInfrastructureType = 'arrow_left' | 'arrow_forward' | 'arrow_right' | 'bus_label' | 'traffic_light';
 
 export interface PointInfrastructureConfig {
     color: string;
@@ -131,6 +131,7 @@ export const POINT_INFRASTRUCTURE_SPECS: Record<PointInfrastructureType, PointIn
     arrow_forward: { color: '#ffffff', widthMeters: 3.0, rotation: 0 },
     arrow_right: { color: '#ffffff', widthMeters: 3.0, rotation: 0 },
     bus_label: { color: '#ffffff', widthMeters: 2.5, rotation: 0 },
+    traffic_light: { color: '#f1c40f', widthMeters: 2.0, rotation: 0 },
 };
 
 export const SINGLE_POINT_TYPES: PointInfrastructureType[] = [
@@ -138,6 +139,7 @@ export const SINGLE_POINT_TYPES: PointInfrastructureType[] = [
     'arrow_forward',
     'arrow_right',
     'bus_label',
+    'traffic_light',
 ];
 
 export const HEX_COLOR_REGEX = /^#([0-9a-f]{6})$/i;

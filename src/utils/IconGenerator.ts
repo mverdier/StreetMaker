@@ -1,6 +1,9 @@
 import { Map } from 'maplibre-gl';
 
 export function registerMapIcons(map: Map): void {
+
+    registerSvgIcon(map, 'traffic-light-icon', '../resources/icons/traffic_light_wikimedia.svg');
+
     // Triangle marking pattern image
     const canvas = document.createElement('canvas');
     canvas.width = 34;
@@ -72,4 +75,23 @@ export function registerMapIcons(map: Map): void {
     createArrowImage('forward');
     createArrowImage('left');
     createArrowImage('right');
+}
+
+function registerSvgIcon(map: Map, iconName: string, iconPath: string) {
+    if (map.hasImage(iconName)) return;
+
+    const img = new Image();
+    img.src = iconPath;
+
+    img.onload = () => {
+        if (map.hasImage(iconName)) return;
+
+        const img = new Image();
+        img.src = iconPath;
+
+        img.onload = () => {
+            if (map.hasImage(iconName)) return;
+            map.addImage(iconName, img);
+        };
+    };
 }
