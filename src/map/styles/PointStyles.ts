@@ -26,6 +26,27 @@ export function getNativePointLayerSpec(pxPerMeterZoom20: number): AddLayerObjec
         ],
     ];
 
+    const textSizeExpression = [
+        'interpolate',
+        ['exponential', 2],
+        ['zoom'],
+        10, [
+            'min',
+            255,
+            ['max', 2, ['/', ['/', ['*', ['coalesce', ['get', 'widthMeters'], 1.5], pxPerMeterZoom20], 1.75], Math.pow(2, 10)]]
+        ],
+        20, [
+            'min',
+            255,
+            ['/', ['*', ['coalesce', ['get', 'widthMeters'], 1.5], pxPerMeterZoom20], 1.75]
+        ],
+        24, [
+            'min',
+            255,
+            ['/', ['*', ['*', ['coalesce', ['get', 'widthMeters'], 1.5], pxPerMeterZoom20], 16], 1.75]
+        ],
+    ];
+
     return {
         id: 'single-points-native-layer',
         type: 'symbol',
@@ -44,14 +65,14 @@ export function getNativePointLayerSpec(pxPerMeterZoom20: number): AddLayerObjec
             'icon-allow-overlap': true,
             'icon-optional': true,
 
-            // Text properties only for things that actually need text (like bus labels)
+            // Text properties for text labels (like bus labels)
             'text-field': [
                 'case',
                 ['==', ['get', 'infrastructureType'], 'bus_label'], 'BUS',
                 ''
             ],
             'text-font': ['Open Sans Semibold'],
-            'text-size': 12,
+            'text-size': textSizeExpression as any,
             'text-rotate': ['coalesce', ['get', 'rotation'], 0],
             'text-rotation-alignment': 'map',
             'text-allow-overlap': true,
