@@ -6,6 +6,7 @@ interface RectangleSelectToolOptions {
     draw: MapboxDraw;
     onGeometryChange: () => void;
     onUpdateHandles: () => void;
+    onHideHandles: () => void;
 }
 
 interface SelectedVertex {
@@ -19,6 +20,7 @@ export class RectangleSelectTool {
     private draw: MapboxDraw;
     private onGeometryChange: () => void;
     private onUpdateHandles: () => void;
+    private onHideHandles: () => void;
 
     private isActive: boolean = false;
     private isDrawingBox: boolean = false;
@@ -34,6 +36,7 @@ export class RectangleSelectTool {
         this.draw = options.draw;
         this.onGeometryChange = options.onGeometryChange;
         this.onUpdateHandles = options.onUpdateHandles;
+        this.onHideHandles = options.onHideHandles;
 
         this.initGlobalListeners();
     }
@@ -51,18 +54,21 @@ export class RectangleSelectTool {
         this.map.getCanvas().style.cursor = 'crosshair';
         this.draw.changeMode('simple_select');
         this.map.boxZoom.disable();
+        this.map.dragPan.disable();
     }
 
     public deactivate(): void {
         this.isActive = false;
         this.map.getCanvas().style.cursor = '';
         this.map.boxZoom.enable();
+        this.map.dragPan.enable();
         this.clearSelection();
     }
 
     public clearSelection(): void {
         this.selectedVertices = [];
         this.clearSelectionVisuals();
+        this.onHideHandles();
     }
 
     public isToolActive(): boolean {
@@ -92,12 +98,17 @@ export class RectangleSelectTool {
         if (this.selectedVertices.length > 0 && this.isPointNearSelectedVertices(point)) {
             this.isDraggingVertices = true;
             this.dragStartMouse = { x: point.x, y: point.y };
+            e.originalEvent.stopPropagation();
+            e.originalEvent.preventDefault();
+            this.map.dragPan.disable();
             return;
         }
 
         if (this.isActive) {
             this.isDrawingBox = true;
             this.startPoint = { x: point.x, y: point.y };
+            e.originalEvent.stopPropagation();
+            e.originalEvent.preventDefault();
             this.clearSelection();
             return;
         }
@@ -110,7 +121,6 @@ export class RectangleSelectTool {
     private handleMouseMove = (e: MapMouseEvent): void => {
         const point = e.point;
 
-        // Dragging selected vertices
         if (this.isDraggingVertices && this.dragStartMouse) {
             const dx = point.x - this.dragStartMouse.x;
             const dy = point.y - this.dragStartMouse.y;
@@ -136,6 +146,7 @@ export class RectangleSelectTool {
         if (this.isDraggingVertices) {
             this.isDraggingVertices = false;
             this.dragStartMouse = null;
+            this.map.dragPan.enable();
             return;
         }
 
@@ -145,10 +156,10 @@ export class RectangleSelectTool {
             this.currentRect = null;
             this.clearBoxSource();
 
-            // Stop selection mode, but keep the points selected and draggable
             this.isActive = false;
             this.map.getCanvas().style.cursor = '';
             this.map.boxZoom.enable();
+            this.map.dragPan.enable();
         }
     };
 

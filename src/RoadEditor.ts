@@ -362,6 +362,7 @@ class RoadEditor {
                 draw: this.draw,
                 onGeometryChange: () => this.handleGeometryChange(),
                 onUpdateHandles: () => this.extensionHandleManager.updateHandles(),
+                onHideHandles: () => this.extensionHandleManager.hideHandles(),
             });
             this.bindRectSelectButton();
         });
