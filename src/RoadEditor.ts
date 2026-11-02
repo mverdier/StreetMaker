@@ -305,6 +305,14 @@ class RoadEditor {
             this.extensionHandleManager.setSelectedFeatureId(this.selectedFeatureId);
         });
 
+        this.map.on('moveend', () => {
+            this.updateScaleForCurrentCenter();
+        });
+
+        this.map.on('zoomend', () => {
+            this.updateScaleForCurrentCenter();
+        });
+
         const canvas = this.map.getCanvas();
 
         canvas.addEventListener('mousedown', (e: MouseEvent) => {
@@ -932,6 +940,90 @@ class RoadEditor {
         this.draw.changeMode('simple_select', { featureIds: [this.selectedFeatureId] });
         this.handleGeometryChange();
         this.extensionHandleManager.updateHandles();
+    }
+
+    private updateScaleForCurrentCenter(): void {
+        const currentLat = this.map.getCenter().lat;
+        const pxPerMeterZoom20 = 1 / getMetersPerPixelAtZoom(20, currentLat, 512);
+
+        const pointSpec = getNativePointLayerSpec(pxPerMeterZoom20);
+        const pointLayout = (pointSpec as any).layout;
+        if (this.map.getLayer('single-points-native-layer') && pointLayout) {
+            if (pointLayout['icon-size']) {
+                this.map.setLayoutProperty('single-points-native-layer', 'icon-size', pointLayout['icon-size']);
+            }
+            if (pointLayout['text-size']) {
+                this.map.setLayoutProperty('single-points-native-layer', 'text-size', pointLayout['text-size']);
+            }
+        }
+
+        const roadSpec = getNativeRoadLayerSpec(pxPerMeterZoom20);
+        if (this.map.getLayer('roads-native-layer') && (roadSpec as any).paint?.['line-width']) {
+            this.map.setPaintProperty('roads-native-layer', 'line-width', (roadSpec as any).paint['line-width']);
+        }
+
+        const centerlineSpec = getNativeRoadCenterlineLayerSpec(pxPerMeterZoom20);
+        if (this.map.getLayer('roads-native-centerline-layer') && (centerlineSpec as any).paint?.['line-width']) {
+            this.map.setPaintProperty('roads-native-centerline-layer', 'line-width', (centerlineSpec as any).paint['line-width']);
+        }
+
+        const crossingSpec = getNativePedestrianCrossingLayerSpec(pxPerMeterZoom20);
+        if (this.map.getLayer('roads-native-crossing-layer') && (crossingSpec as any).paint?.['line-width']) {
+            this.map.setPaintProperty('roads-native-crossing-layer', 'line-width', (crossingSpec as any).paint['line-width']);
+        }
+
+        const squareSpec = getNativeSquareMarkingsLayerSpec(pxPerMeterZoom20);
+        if (this.map.getLayer('roads-native-square-markings-layer') && (squareSpec as any).paint?.['line-width']) {
+            this.map.setPaintProperty('roads-native-square-markings-layer', 'line-width', (squareSpec as any).paint['line-width']);
+        }
+
+        const continuousSpec = getNativeContinuousLineLayerSpec(pxPerMeterZoom20);
+        if (this.map.getLayer('roads-native-continuous-line-layer') && (continuousSpec as any).paint?.['line-width']) {
+            this.map.setPaintProperty('roads-native-continuous-line-layer', 'line-width', (continuousSpec as any).paint['line-width']);
+        }
+
+        const triangleSpec = getNativeTriangleMarkingsLayerSpec(pxPerMeterZoom20);
+        if (this.map.getLayer('roads-native-markings-triangle-layer') && (triangleSpec as any).paint?.['line-width']) {
+            this.map.setPaintProperty('roads-native-markings-triangle-layer', 'line-width', (triangleSpec as any).paint['line-width']);
+        }
+
+        const dashedSpec = getNativeDashedLineLayerSpec(pxPerMeterZoom20);
+        if (this.map.getLayer('roads-native-dashed-line-layer') && (dashedSpec as any).paint?.['line-width']) {
+            this.map.setPaintProperty('roads-native-dashed-line-layer', 'line-width', (dashedSpec as any).paint['line-width']);
+        }
+
+        const tramLeftSpec = getNativeSingleTramRailLeftLayerSpec(pxPerMeterZoom20);
+        if (this.map.getLayer('roads-native-single-tram-rail-left-layer')) {
+            if ((tramLeftSpec as any).paint?.['line-width']) {
+                this.map.setPaintProperty('roads-native-single-tram-rail-left-layer', 'line-width', (tramLeftSpec as any).paint['line-width']);
+            }
+            if ((tramLeftSpec as any).paint?.['line-offset']) {
+                this.map.setPaintProperty('roads-native-single-tram-rail-left-layer', 'line-offset', (tramLeftSpec as any).paint['line-offset']);
+            }
+        }
+
+        const tramRightSpec = getNativeSingleTramRailRightLayerSpec(pxPerMeterZoom20);
+        if (this.map.getLayer('roads-native-single-tram-rail-right-layer')) {
+            if ((tramRightSpec as any).paint?.['line-width']) {
+                this.map.setPaintProperty('roads-native-single-tram-rail-right-layer', 'line-width', (tramRightSpec as any).paint['line-width']);
+            }
+            if ((tramRightSpec as any).paint?.['line-offset']) {
+                this.map.setPaintProperty('roads-native-single-tram-rail-right-layer', 'line-offset', (tramRightSpec as any).paint['line-offset']);
+            }
+        }
+
+        const doubleTramSpecs = getNativeDoubleTramRailsLayerSpec(pxPerMeterZoom20);
+        doubleTramSpecs.forEach((railSpec, index) => {
+            const layerId = `roads-native-double-tram-rail-${index}`;
+            if (this.map.getLayer(layerId)) {
+                if ((railSpec as any).paint?.['line-width']) {
+                    this.map.setPaintProperty(layerId, 'line-width', (railSpec as any).paint['line-width']);
+                }
+                if ((railSpec as any).paint?.['line-offset']) {
+                    this.map.setPaintProperty(layerId, 'line-offset', (railSpec as any).paint['line-offset']);
+                }
+            }
+        });
     }
 }
 
