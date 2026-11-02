@@ -14,7 +14,7 @@ export function getRoadStyles(activeType: LineInfrastructureType, pxPerMeterZoom
             layout: { 'line-cap': 'round', 'line-join': 'round' },
             paint: {
                 'line-color': '#000000',
-                'line-width': 1,
+                'line-width': 25,
                 'line-opacity': 0,
             },
         },
@@ -27,7 +27,7 @@ export function getRoadStyles(activeType: LineInfrastructureType, pxPerMeterZoom
             layout: { 'line-cap': 'round', 'line-join': 'round' },
             paint: {
                 'line-color': '#000000',
-                'line-width': 1,
+                'line-width': 25,
                 'line-opacity': 0,
             },
         },
