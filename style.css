@@ -461,3 +461,8 @@ kbd {
 .drawing-mode .mapboxgl-canvas-container {
     cursor: crosshair !important;
 }
+
+.button-icon {
+    width: 23px;
+    height: 23px;
+}

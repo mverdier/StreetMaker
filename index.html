@@ -22,38 +22,16 @@
 <body>
     <!-- Main Control Panel -->
     <div id="editor-controls">
-        <button id="btn-new-line" class="control-button" data-tooltip="New Line&#10;Draw roads, bike paths, or lanes.">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vert">
-                <path d="M3 17l6-6 6 6 6-6" />
-                <circle cx="3" cy="17" r="2.5" fill="currentColor" />
-                <circle cx="9" cy="11" r="2.5" fill="currentColor" />
-                <circle cx="15" cy="17" r="2.5" fill="currentColor" />
-                <circle cx="21" cy="11" r="2.5" fill="currentColor" />
-            </svg>
-        </button>
-        <button id="btn-new-markings" class="control-button" data-tooltip="Create markings&#10;Add crosswalks, lines, and other road markings.">🖌️</button>
-        <button id="btn-new-single-point" class="control-button" data-tooltip="Create single Point&#10;Place directional arrows, or other self-standing markers.">📍</button>
-        <button id="btn-new-poly" class="control-button" data-tooltip="New polygon&#10;Draw sidewalks, medians, or custom filled areas.">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vert">
-                <path d="M12 3l9 6-3 12H6L3 9z" />
-                <circle cx="12" cy="3" r="2" fill="currentColor" />
-                <circle cx="21" cy="9" r="2" fill="currentColor" />
-                <circle cx="18" cy="21" r="2" fill="currentColor" />
-                <circle cx="6" cy="21" r="2" fill="currentColor" />
-                <circle cx="3" cy="9" r="2" fill="currentColor" />
-            </svg>
-        </button>
-        <button id="btn-rect-select" class="control-button" data-tooltip="Rectangle select&#10;Click and drag to select.">🔲</button>
-        <button id="btn-measure" class="control-button" data-tooltip="Measure distances">📏</button>
-        <button id="btn-split" class="control-button" data-tooltip="Cut a line segment into two.">✂️</button>
-        <button id="btn-import" class="control-button" data-tooltip="Import GeoJSON&#10;Load an existing project file into the editor.">📤</button>
-        <button id="btn-export" class="control-button" data-tooltip="Export GeoJSON&#10;Save your project to a file.">📥</button>
-        <button id="btn-settings" class="control-button" data-tooltip="Settings">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
-        </button>
+        <button id="btn-new-line" class="control-button" data-tooltip="New Line&#10;Draw roads, bike paths, or lanes."><img src="resources/icons/line_svgrepo.svg" alt="New Line" class="button-icon"></button>
+        <button id="btn-new-markings" class="control-button" data-tooltip="Create markings&#10;Add crosswalks, lines, and other road markings."><img src="resources/icons/paintbrush_svgrepo.svg" alt="Mew Markings" class="button-icon"></button>
+        <button id="btn-new-single-point" class="control-button" data-tooltip="Create single Point&#10;Place directional arrows, or other self-standing markers."><img src="resources/icons/pin_svgrepo.svg" alt="Single Point" class="button-icon"></button>
+        <button id="btn-new-poly" class="control-button" data-tooltip="New polygon&#10;Draw sidewalks, medians, or custom filled areas."><img src="resources/icons/polygon_svgrepo.svg" alt="Polygon Creation" class="button-icon"></button>
+        <button id="btn-rect-select" class="control-button" data-tooltip="Rectangle select&#10;Click and drag to select."><img src="resources/icons/rectangle_select_svgrepo.svg" alt="Rectangle Select" style="height: 20px; width: 20px;"></button>
+        <button id="btn-measure" class="control-button" data-tooltip="Measure distances"><img src="resources/icons/measure_svgrepo.svg" alt="Measure" class="button-icon"></button>
+        <button id="btn-split" class="control-button" data-tooltip="Cut a line segment into two."><img src="resources/icons/scissors_svgrepo.svg" alt="Cut Line" class="button-icon"></button>
+        <button id="btn-import" class="control-button" data-tooltip="Import GeoJSON&#10;Load an existing project file into the editor."><img src="resources/icons/import_svgrepo.svg" alt="Import" style="height: 25px; width: 25px;"></button>
+        <button id="btn-export" class="control-button" data-tooltip="Export GeoJSON&#10;Save your project to a file."><img src="resources/icons/export_svgrepo.svg" alt="Export" style="height: 25px; width: 25px;"></button>
+        <button id="btn-settings" class="control-button" data-tooltip="Settings"><img src="resources/icons/gear_svgrepo.svg" alt="Settings" class="button-icon"></button>
 
         <input type="file" id="file-input-geojson" accept=".geojson,application/json" style="display: none;" />
     </div>
@@ -146,7 +124,10 @@
             <label class="option-label"><input type="checkbox" id="toggle-labels" checked /> Labels</label>
         </div>
 
-        <a href="https://commons.wikimedia.org/wiki/File:Traffic_lights_yellow.svg">maix</a>, <a href="https://creativecommons.org/licenses/by-sa/2.5">CC BY-SA 2.5</a>, via Wikimedia Commons
+        <a href="https://commons.wikimedia.org/wiki/File:Traffic_lights_yellow.svg">Traffic light</a>: <a href="https://creativecommons.org/licenses/by-sa/2.5">CC BY-SA 2.5</a>, via Wikimedia Commons
+        <br><a href="https://www.svgrepo.com/svg/524040/export">Export</a>, <a href="https://www.svgrepo.com/svg/524065/import">export</a>, <a href="https://www.svgrepo.com/svg/446308/rectangle-4">rectangle</a>, <a href="https://www.svgrepo.com/svg/491696/scissors">scissors</a>, <a href="https://www.svgrepo.com/svg/532244/gear">gear</a>, and <a href="https://www.svgrepo.com/svg/521788/pin">pin</a>: <a href="https://www.svgrepo.com/page/licensing/#CC%20Attribution">CC Attribution License</a>, via SVG Repo
+        <br><a href="https://www.svgrepo.com/svg/456623/paintbrush-paint-tool">Paint brush</a>: <a href="https://www.svgrepo.com/page/licensing/#MIT">MIT License</a>, via SVG Repo
+        <br><a href="https://www.svgrepo.com/svg/399227/polygon-pt">Polygon</a>, <a href="https://www.svgrepo.com/svg/399231/polyline-pt">line</a>: <a href="https://www.svgrepo.com/page/licensing/#GPL">GPL License</a>, via SVG Repo
 
         <div class="panel-buttons">
             <button id="settings-btn-close" class="panel-cancel-button">Close</button>
