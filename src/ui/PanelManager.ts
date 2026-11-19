@@ -30,9 +30,28 @@ export class PanelManager {
     public opacityControl: OpacityControl;
 
     constructor(options: PanelManagerOptions) {
-        ['btn-new-line', 'btn-new-markings', 'btn-new-poly', 'btn-new-single-point', 'btn-new-sticker'].forEach((id) => {
-            document.getElementById(id)?.addEventListener('click', () => {
+        this.options = options;
+
+        const menuButtonIds = [
+            'btn-new-line',
+            'btn-new-markings',
+            'btn-new-poly',
+            'btn-new-single-point',
+            'btn-new-sticker',
+        ];
+
+        menuButtonIds.forEach((id) => {
+            document.getElementById(id)?.addEventListener('click', (e) => {
+                const isAlreadyOpen = this.activeMenuKey === id;
+
                 options.closeEverything();
+
+                if (isAlreadyOpen) {
+                    e.stopImmediatePropagation();
+                    return;
+                }
+
+                this.activeMenuKey = id;
             });
         });
 
@@ -42,8 +61,7 @@ export class PanelManager {
 
         const btnSettings = document.getElementById('btn-settings');
         btnSettings?.addEventListener('click', () => {
-            options.closeEverything();
-            this.settingsPanel.toggle();
+            this.toggleMenu('settings', () => this.settingsPanel.toggle());
         });
 
         this.settingsPanel = new SettingsPanel({
@@ -81,6 +99,20 @@ export class PanelManager {
         });
     }
 
+    private options: PanelManagerOptions;
+    private activeMenuKey: string | null = null;
+
+    private toggleMenu(menuKey: string, openFn: () => void): void {
+        const isAlreadyOpen = this.activeMenuKey === menuKey;
+
+        this.options.closeEverything();
+
+        if (!isAlreadyOpen) {
+            openFn();
+            this.activeMenuKey = menuKey;
+        }
+    }
+
     public closeAll(): void {
         this.inspectorPanel.close();
         this.polyCreationPanel.close();
@@ -88,6 +120,7 @@ export class PanelManager {
         this.markingCreationPanel.close();
         this.settingsPanel.close();
         this.pointCreationPanel.close();
+        this.activeMenuKey = null;
     }
 
     public confirmOpenPanel(): boolean {
