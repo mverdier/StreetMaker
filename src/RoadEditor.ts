@@ -72,6 +72,29 @@ const ALL_ROAD_LINE_LAYERS = [
 
 const WELCOME_SEEN_KEY = 'road_editor_welcome_seen';
 
+type LastConfig =
+    | {
+    kind: 'line';
+    type: LineInfrastructureType;
+    color: string;
+    widthMeters: number;
+    isDouble: boolean;
+    smooth: boolean;
+}
+    | {
+    kind: 'polygon';
+    type: PolygonInfrastructureType;
+    color: string;
+    smooth: boolean;
+}
+    | {
+    kind: 'point';
+    type: PointInfrastructureType;
+    color: string;
+    widthMeters: number;
+    rotation: number;
+};
+
 setWorkerUrl(maplibreWorkerUrl);
 
 class RoadEditor {
@@ -123,6 +146,8 @@ class RoadEditor {
         rotation: 0,
         iconName: 'arrow-forward-icon',
     };
+
+    private lastConfig: LastConfig | null = null;
 
     constructor(containerId: string) {
         this.map = new Map({
@@ -372,6 +397,7 @@ class RoadEditor {
             this.bindMeasureButton();
             this.bindShowWelcomeButton();
             this.bindClearAutosaveButton();
+            this.bindRepeatConfigButton();
 
             this.setupDrawEventHandlers();
             this.setupKeybindings();
@@ -427,6 +453,14 @@ class RoadEditor {
             this.extensionHandleManager?.hideHandles();
             this.handleGeometryChange();
             this.closeEverything();
+        });
+    }
+
+    private bindRepeatConfigButton(): void {
+        this.syncRepeatConfigButton();
+        const btnRepeat = document.getElementById('btn-repeat-config');
+        btnRepeat?.addEventListener('click', () => {
+            this.repeatLastDrawConfig();
         });
     }
 
@@ -573,12 +607,51 @@ class RoadEditor {
         });
     }
 
+    private syncRepeatConfigButton(): void {
+        const btnRepeat = document.getElementById('btn-repeat-config') as HTMLButtonElement | null;
+        if (!btnRepeat) return;
+
+        const hasConfig = this.lastConfig !== null;
+        btnRepeat.disabled = !hasConfig;
+        btnRepeat.style.display = hasConfig ? '' : 'none';
+    }
+
+    public repeatLastDrawConfig(): void {
+        if (!this.lastConfig) return;
+
+        if (this.lastConfig.kind === 'line') {
+            this.startDrawingWithConfig(
+                this.lastConfig.type,
+                this.lastConfig.color,
+                this.lastConfig.widthMeters,
+                this.lastConfig.isDouble,
+                this.lastConfig.smooth
+            );
+        } else if (this.lastConfig.kind === 'polygon') {
+            this.startDrawingPolygonWithConfig(
+                this.lastConfig.type,
+                this.lastConfig.color,
+                this.lastConfig.smooth
+            );
+        } else if (this.lastConfig.kind === 'point') {
+            this.startDrawingSinglePointWithConfig(
+                this.lastConfig.type,
+                this.lastConfig.color,
+                this.lastConfig.widthMeters,
+                this.lastConfig.rotation
+            );
+        }
+    }
+
     public startDrawingSinglePointWithConfig(
         type: PointInfrastructureType,
         color: string,
         widthMeters: number,
         rotation: number
     ): void {
+        this.lastConfig = { kind: 'point', type, color, widthMeters, rotation };
+        this.syncRepeatConfigButton();
+
         this.setDrawingCursorActive(true);
 
         let iconName = '';
@@ -611,6 +684,9 @@ class RoadEditor {
     }
 
     public startDrawingWithConfig(type: LineInfrastructureType, color: string, widthMeters: number, isDouble: boolean, smooth: boolean): void {
+        this.lastConfig = { kind: 'line', type, color, widthMeters, isDouble, smooth };
+        this.syncRepeatConfigButton();
+
         this.setDrawingCursorActive(true);
 
         this.activeConfig = { infrastructureType: type, color, widthMeters, isDouble, smooth, zIndex: 50 };
@@ -627,34 +703,10 @@ class RoadEditor {
         });
     }
 
-    public startDrawingRoad(type: LineInfrastructureType = 'bicycle_path'): void {
-        this.setDrawingCursorActive(true);
-
-        this.activeLineinfrastructureType = type;
-        this.draw.changeMode('draw_line_string');
-        const spec = LINE_INFRASTRUCTURE_SPECS[type];
-        this.updateActiveLayerPaint(spec.color, spec.widthMeters);
-
-        this.activeConfig = {
-            infrastructureType: type,
-            color: spec.color,
-            widthMeters: spec.widthMeters,
-            isDouble: false,
-            smooth: spec.smooth,
-            zIndex: 50,
-        };
-
-        this.applyPropertiesToActiveFeatures({
-            infrastructureType: type,
-            color: spec.color,
-            widthMeters: spec.widthMeters,
-            isDouble: spec.isDouble,
-            smooth: spec.smooth,
-            zIndex: 50,
-        });
-    }
-
     public startDrawingPolygonWithConfig(type: PolygonInfrastructureType, color: string, smooth: boolean): void {
+        this.lastConfig = { kind: 'polygon', type, color, smooth };
+        this.syncRepeatConfigButton();
+
         this.setDrawingCursorActive(true);
 
         this.activePolygonConfig = { infrastructureType: type, color, smooth, zIndex: 50 };
@@ -817,7 +869,7 @@ class RoadEditor {
 
     private setupKeybindings(): void {
         setupKeybindings({
-            startDrawingRoad: (type) => this.startDrawingRoad(type),
+            repeatLastConfig: () => this.repeatLastDrawConfig(),
             closeEverything: () => this.closeEverything(),
             trashDraw: () => this.draw.trash(),
             updateExtensionHandles: () => this.extensionHandleManager.updateHandles(),

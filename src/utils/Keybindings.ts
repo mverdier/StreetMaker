@@ -1,7 +1,5 @@
-import { type LineInfrastructureType } from '../config/infrastructure';
-
 export interface KeybindingActions {
-    startDrawingRoad: (type: LineInfrastructureType) => void;
+    repeatLastConfig: () => void;
     closeEverything: () => void;
     trashDraw: () => void;
     updateExtensionHandles: () => void;
@@ -9,11 +7,22 @@ export interface KeybindingActions {
 
 export function setupKeybindings(actions: KeybindingActions): void {
     window.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key === 'l' || e.key === 'L') {
-            actions.startDrawingRoad('bicycle_path');
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+        const target = e.target as HTMLElement | null;
+        if (
+            target &&
+            (target.tagName === 'INPUT' ||
+                target.tagName === 'TEXTAREA' ||
+                target.tagName === 'SELECT' ||
+                target.isContentEditable)
+        ) {
+            return;
         }
-        if (e.key === 'r' || e.key === 'R') {
-            actions.startDrawingRoad('roadway');
+
+        if (e.key === 'n' || e.key === 'N') {
+            e.preventDefault();
+            actions.repeatLastConfig();
         }
         if (e.key === 'Escape') {
             actions.closeEverything();

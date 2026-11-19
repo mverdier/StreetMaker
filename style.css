@@ -410,6 +410,10 @@ kbd {
     position: relative;
 }
 
+.control-button:disabled {
+    display:none;
+}
+
 .control-button::before,
 .control-button::after {
     content: '';
@@ -433,7 +437,7 @@ kbd {
     font-size: 11px;
     font-family: system-ui, -apple-system, sans-serif;
     line-height: 1.4;
-    white-space: pre-wrap; /* Respects line breaks (&#10;) to separate name and usage */
+    white-space: pre-wrap;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(4px);
     text-align: left;
