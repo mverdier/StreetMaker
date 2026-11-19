@@ -619,27 +619,39 @@ class RoadEditor {
     public repeatLastDrawConfig(): void {
         if (!this.lastConfig) return;
 
-        if (this.lastConfig.kind === 'line') {
-            this.startDrawingWithConfig(
-                this.lastConfig.type,
-                this.lastConfig.color,
-                this.lastConfig.widthMeters,
-                this.lastConfig.isDouble,
-                this.lastConfig.smooth
-            );
-        } else if (this.lastConfig.kind === 'polygon') {
-            this.startDrawingPolygonWithConfig(
-                this.lastConfig.type,
-                this.lastConfig.color,
-                this.lastConfig.smooth
-            );
-        } else if (this.lastConfig.kind === 'point') {
-            this.startDrawingSinglePointWithConfig(
-                this.lastConfig.type,
-                this.lastConfig.color,
-                this.lastConfig.widthMeters,
-                this.lastConfig.rotation
-            );
+        const startNextDrawing = () => {
+            if (!this.lastConfig) return;
+
+            if (this.lastConfig.kind === 'line') {
+                this.startDrawingWithConfig(
+                    this.lastConfig.type,
+                    this.lastConfig.color,
+                    this.lastConfig.widthMeters,
+                    this.lastConfig.isDouble,
+                    this.lastConfig.smooth
+                );
+            } else if (this.lastConfig.kind === 'polygon') {
+                this.startDrawingPolygonWithConfig(
+                    this.lastConfig.type,
+                    this.lastConfig.color,
+                    this.lastConfig.smooth
+                );
+            } else if (this.lastConfig.kind === 'point') {
+                this.startDrawingSinglePointWithConfig(
+                    this.lastConfig.type,
+                    this.lastConfig.color,
+                    this.lastConfig.widthMeters,
+                    this.lastConfig.rotation
+                );
+            }
+        };
+
+        const currentMode = this.draw.getMode();
+        if (currentMode.startsWith('draw_')) {
+            this.draw.changeMode('simple_select');
+            setTimeout(startNextDrawing, 0);
+        } else {
+            startNextDrawing();
         }
     }
 
