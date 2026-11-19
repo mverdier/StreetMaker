@@ -38,7 +38,7 @@ import {
     GOOGLE_SATELLITE_STYLE
 } from "./map/styles/MapStyle";
 import {registerMapIcons} from "./utils/IconGenerator";
-import {setupFileImportExport} from "./utils/FileExportManager";
+import {setupFileImportExport, saveProjectToLocalStorage, loadSavedProject, clearSavedProject} from "./utils/FileExportManager";
 import {setupKeybindings} from "./utils/Keybindings";
 import {PanelManager} from "./ui/PanelManager";
 import {processGeometryFeatures} from "./utils/GeometryProcessor";
@@ -69,6 +69,8 @@ const ALL_ROAD_LINE_LAYERS = [
     'roads-native-double-tram-rail-2',
     'roads-native-double-tram-rail-3',
 ] as const;
+
+const WELCOME_SEEN_KEY = 'road_editor_welcome_seen';
 
 setWorkerUrl(maplibreWorkerUrl);
 
@@ -347,6 +349,7 @@ class RoadEditor {
 
             this.setupPanels();
             this.setupFileImportExport();
+            this.setupAutoSave();
 
             this.measureTool = new MeasureTool(this.map);
             this.splitTool = new SplitTool({
@@ -358,10 +361,17 @@ class RoadEditor {
                 clearSnapIndicator: () => this.clearSnapIndicator(),
             });
             const welcomeModal = new WelcomeModal();
-            welcomeModal.open();
+            if (!localStorage.getItem(WELCOME_SEEN_KEY)) {
+                welcomeModal.open();
+                localStorage.setItem(WELCOME_SEEN_KEY, 'true');
+            } else {
+                welcomeModal.close();
+            }
 
             this.bindSplitButton();
             this.bindMeasureButton();
+            this.bindShowWelcomeButton();
+            this.bindClearAutosaveButton();
 
             this.setupDrawEventHandlers();
             this.setupKeybindings();
@@ -374,6 +384,8 @@ class RoadEditor {
                 onHideHandles: () => this.extensionHandleManager.hideHandles(),
             });
             this.bindRectSelectButton();
+
+            this.loadSavedProject();
         });
     }
 
@@ -395,6 +407,33 @@ class RoadEditor {
                     this.draw.setFeatureProperty(feature.id, key, val);
                 }
             }
+        });
+    }
+
+    private bindClearAutosaveButton(): void {
+        const btnClear = document.getElementById('btn-clear-autosave');
+        btnClear?.addEventListener('click', () => {
+            const confirmed = window.confirm(
+                'Clear auto-saved data and remove all currently drawn features from the map?\n\n' +
+                'Considering exporting your project first, this cannot be undone.'
+            );
+            if (!confirmed) return;
+
+            clearSavedProject();
+
+            this.draw.deleteAll();
+            this.selectedFeatureId = null;
+            this.panelManager?.inspectorPanel.close();
+            this.extensionHandleManager?.hideHandles();
+            this.handleGeometryChange();
+            this.closeEverything();
+        });
+    }
+
+    private bindShowWelcomeButton(): void {
+        const btnShowWelcome = document.getElementById('btn-show-welcome');
+        btnShowWelcome?.addEventListener('click', () => {
+            this.openWelcomeModal();
         });
     }
 
@@ -422,13 +461,28 @@ class RoadEditor {
         });
     }
 
+    public openWelcomeModal(): void {
+        const welcomeModal = new WelcomeModal();
+        welcomeModal.open();
+    }
+
+    private loadSavedProject(): void {
+        loadSavedProject({
+            deactivateMeasureTool: () => this.measureTool.deactivate(),
+            getDrawData: () => this.draw.getAll(),
+            setDrawData: (geojson) => this.draw.set(geojson),
+            handleGeometryChange: () => this.handleGeometryChange(),
+            fitMapToGeoJSON: (geojson) => this.fitMapToGeoJSON(geojson, false),
+        });
+    }
+
     private setupFileImportExport(): void {
         setupFileImportExport({
             deactivateMeasureTool: () => this.measureTool.deactivate(),
             getDrawData: () => this.draw.getAll() as GeoJSON.FeatureCollection,
             setDrawData: (geojson) => this.draw.set(geojson),
             handleGeometryChange: () => this.handleGeometryChange(),
-            fitMapToGeoJSON: (geojson) => this.fitMapToGeoJSON(geojson),
+            fitMapToGeoJSON: (geojson) => this.fitMapToGeoJSON(geojson, true),
         });
     }
 
@@ -807,11 +861,25 @@ class RoadEditor {
         }
     }
 
-    private fitMapToGeoJSON(geojson: GeoJSON.FeatureCollection): void {
+    private fitMapToGeoJSON(geojson: GeoJSON.FeatureCollection, animate: boolean): void {
         const bounds = getGeoJSONBounds(geojson);
         if (bounds) {
-            this.map.fitBounds(bounds, { padding: 50, maxZoom: 19 });
+            this.map.fitBounds(bounds, { padding: 50, maxZoom: 19, animate: animate });
         }
+    }
+
+    private setupAutoSave() {
+        let saveTimeout: any = null;
+        const triggerAutoSave = () => {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                saveProjectToLocalStorage(this.draw.getAll());
+            }, 300);
+        };
+
+        this.map.on('draw.create' as any, triggerAutoSave);
+        this.map.on('draw.update' as any, triggerAutoSave);
+        this.map.on('draw.delete' as any, triggerAutoSave);
     }
 
     private closeEverything(): void {

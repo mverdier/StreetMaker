@@ -1,11 +1,67 @@
 import { downloadGeoJSON, parseGeoJSONFile } from './FileHandler';
 
+const AUTOSAVE_KEY = 'road_editor_autosave';
+
 export interface FileExportActions {
     deactivateMeasureTool: () => void;
     getDrawData: () => GeoJSON.FeatureCollection;
     setDrawData: (geojson: GeoJSON.FeatureCollection) => void;
     handleGeometryChange: () => void;
     fitMapToGeoJSON: (geojson: GeoJSON.FeatureCollection) => void;
+}
+
+/**
+ * Saves the current FeatureCollection to localStorage.
+ */
+export function saveProjectToLocalStorage(geojson: GeoJSON.FeatureCollection): void {
+    try {
+        if (geojson.features && geojson.features.length > 0) {
+            localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(geojson));
+        } else {
+            localStorage.removeItem(AUTOSAVE_KEY);
+        }
+    } catch (e) {
+        console.error('Failed to auto-save project to localStorage:', e);
+    }
+}
+
+/**
+ * Loads an auto-saved project from localStorage using existing actions.
+ */
+export function loadSavedProject(actions: FileExportActions): boolean {
+    try {
+        const savedDataString = localStorage.getItem(AUTOSAVE_KEY);
+        if (!savedDataString) return false;
+
+        const parsedData = JSON.parse(savedDataString) as GeoJSON.FeatureCollection;
+        if (!parsedData || !parsedData.features || parsedData.features.length === 0) {
+            return false;
+        }
+
+        setTimeout(() => {
+            actions.setDrawData(parsedData);
+            actions.handleGeometryChange();
+            actions.fitMapToGeoJSON(parsedData);
+            console.log(`Successfully restored ${parsedData.features.length} feature(s) from auto-save.`);
+        }, 50);
+
+        return true;
+    } catch (e) {
+        console.error('Failed to load auto-saved project:', e);
+        return false;
+    }
+}
+
+/**
+ * Clears the project currently saved in localStorage
+ */
+export function clearSavedProject(): void {
+    try {
+        localStorage.removeItem(AUTOSAVE_KEY);
+        console.log('Cleared auto-saved project from localStorage.');
+    } catch (e) {
+        console.error('Failed to clear auto-saved project from localStorage:', e);
+    }
 }
 
 export function setupFileImportExport(actions: FileExportActions): void {
@@ -45,7 +101,8 @@ export function setupFileImportExport(actions: FileExportActions): void {
             actions.setDrawData(geojson);
             actions.handleGeometryChange();
             actions.fitMapToGeoJSON(geojson);
-            console.log(`Successfully imported ${geojson.features.length} feature(s).`);
+            saveProjectToLocalStorage(geojson);
+            console.log(`Successfully imported and saved ${geojson.features.length} feature(s).`);
         } catch (error) {
             console.error(error);
             alert(`Import failed: ${(error as Error).message}`);
