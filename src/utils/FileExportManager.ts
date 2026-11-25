@@ -112,6 +112,12 @@ export function setupFileImportExport(actions: FileExportActions): void {
     const btnAmsterdamRoundabout = document.getElementById('btn-amsterdam-roundabout');
     btnAmsterdamRoundabout?.addEventListener('click', () => {
         loadExampleProject(actions, '../../resources/examples/example_amsterdam_roundabout.geojson');
+        closeSettings();
+    })
+    const btnToulouseStation = document.getElementById('btn-toulouse-station');
+    btnToulouseStation?.addEventListener('click', () => {
+        loadExampleProject(actions, '../../resources/examples/example_toulouse_station.geojson');
+        closeSettings();
     })
 }
 
@@ -137,4 +143,9 @@ async function loadExampleProject(actions: FileExportActions, fileName: string):
         console.error(error);
         alert(`Import failed: ${(error as Error).message}`);
     }
+}
+
+function closeSettings() {
+    var settingsPanel = document.getElementById('settings-panel');
+    if (settingsPanel) settingsPanel.style.display = 'none';
 }
