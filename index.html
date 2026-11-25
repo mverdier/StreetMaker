@@ -133,6 +133,16 @@
             <button id="btn-clear-autosave" class="panel-delete-button">Clear saved data</button>
         </div>
 
+        <hr>
+        <h3 class="panel-title">Example Layouts</h3>
+        <p>⚠️ Loading an example will erase all your work, consider saving first.</p>
+
+        <div class="intermediate-option">
+            <button id="btn-amsterdam-roundabout" class="panel-cancel-button">🇳🇱 Amsterdam Roundabout</button>
+        </div>
+
+        <hr>
+        <h3 class="panel-title">Credits</h3>
         <ul>
             <li>
                 <a href="https://commons.wikimedia.org/wiki/File:Traffic_lights_yellow.svg">Traffic light</a>: <a href="https://creativecommons.org/licenses/by-sa/2.5">CC BY-SA 2.5</a>, via Wikimedia Commons
@@ -246,44 +256,36 @@
         <div class="modal-content">
             <button id="welcome-close-btn" class="modal-close">&times;</button>
             <div id="welcome-modal-body">
-                <h2>Thanks for trying out the alpha version of Street Maker :)</h2>
-                <h5>(The name is not final)</h5>
-                <p>First off, I would absolutely love to hear any feedback, positive or negative, about the tool.
+                <h2>Welcome to the Street Maker beta</h2>
+                <p>
+                    First off, I would absolutely love to hear any feedback, positive or negative, about the tool.
                     It would be great to understand your frustrations, what you thought could be better, what is
-                    missing, what could make it easier or more enjoyable. Please send me a message directly via
-                    whichever way I sent you this through, or directly at mart[dot]verdier at Gmail!</p>
+                    missing, what could make it easier or more enjoyable. You can email me at mart[dot]verdier at Gmail!</p>
                 <hr>
-                <p>This is all pretty barebones for now, and it's nowhere near finished, but I think the product is,
-                generally, in a usable state.</p>
-                <p>⚠️ For the best experience of the tool in its current state, here's some tips:</p>
+                <p>
+                    This is still pretty barebones for now, and it's nowhere near finished. Here are some tips to ensure
+                    a pleasant experience
+                </p>
                 <ul>
-                    <li>Save your work often! There are import and export buttons on the left. If the page
-                        refreshes for any reason, you will lose your work. I want to find a way to solve that,
-                        too</li>
                     <li>In the settings, you can toggle labels on and off</li>
                     <li>You can click on any line to edit it. Lines are not <i>actually</i> smooth, they are just
                         a series of points, so you're better off clicking on the start or end points to "find" it</li>
                     <li>There is no ctrl+Z yet, bear that in mind if you accidentally delete something</li>
-                    <li>You can hit L for directly making a bike path, and R for a roadway. You can edit their
-                        properties after you're done drawing them</li>
+                    <li>You can hit the N key to start drawing the same type of infrastructure you last drew.</li>
                 </ul>
                 <hr>
                 <p>There are a lot of UI/UX changes, especially thinking of quality of life, that I want to make. A lot
                 of the interactions feel a bit clunky and repetitive, but this will get better. Some things I already
                 plan on improving:</p>
                 <ul>
-                    <li>Custom preset colours/widths, so that they stay the same every time. Currently, they reset once
-                        you change infra types</li>
-                    <li>Saving some infra configs as "quick links", which can be clicked once to start drawing, instead
-                        of going through the menu every time</li>
-                    <li>Satellite map layers swapping</li>
-                    <li>New types of infrastructure to be more versatile. Right now, changing colours on lines and
-                        polygons already allows a lot of creativity, but I want it more "properly" layered</li>
                     <li>Language support. Sorry, non-English speakers, not yet :(</li>
                     <li>Snapping lines to each other</li>
                     <li>More "single point" bits of infra. Trees, bike logos, etc</li>
                 </ul>
                 <p>Thanks a bunch! -Martin :)</p>
+            </div>
+            <div class="welcome-modal-actions">
+                <button id="welcome-tour-btn" type="button" class="panel-confirm-button">Start Guided Tour</button>
             </div>
         </div>
     </div>

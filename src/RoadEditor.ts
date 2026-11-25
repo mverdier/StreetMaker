@@ -57,6 +57,7 @@ import {
     saveInfraOverrides,
     type StoredInfraOverrides,
 } from './config/UserDefaults';
+import {GuidedTour} from "./ui/GuidedTour";
 
 export type { LineInfrastructureType };
 export { LINE_INFRASTRUCTURE_SPECS };
@@ -156,6 +157,7 @@ class RoadEditor {
 
     private lastConfig: LastConfig | null = null;
     private infraOverrides: StoredInfraOverrides = loadInfraOverrides();
+    private guidedTour!: GuidedTour;
 
     constructor(containerId: string) {
         this.map = new Map({
@@ -393,7 +395,8 @@ class RoadEditor {
                 showSnapIndicator: (coord) => this.showSnapIndicator(coord),
                 clearSnapIndicator: () => this.clearSnapIndicator(),
             });
-            const welcomeModal = new WelcomeModal();
+            this.setupGuidedTour();
+            const welcomeModal = new WelcomeModal({ onStartTour: () => this.guidedTour.start() });
             if (!localStorage.getItem(WELCOME_SEEN_KEY)) {
                 welcomeModal.open();
                 localStorage.setItem(WELCOME_SEEN_KEY, 'true');
@@ -475,6 +478,7 @@ class RoadEditor {
     private bindShowWelcomeButton(): void {
         const btnShowWelcome = document.getElementById('btn-show-welcome');
         btnShowWelcome?.addEventListener('click', () => {
+            this.closeEverything();
             this.openWelcomeModal();
         });
     }
@@ -719,6 +723,7 @@ class RoadEditor {
         this.activeConfig = { infrastructureType: type, color, widthMeters, isDouble, smooth, zIndex: 50 };
         this.updateActiveLayerPaint(color, widthMeters);
         this.draw.changeMode('draw_line_string');
+        this.guidedTour?.advanceFrom('create-line-panel');
 
         this.applyPropertiesToActiveFeatures({
             infrastructureType: type,
@@ -1186,6 +1191,77 @@ class RoadEditor {
 
     public getPointTypeDefaults(type: PointInfrastructureType) {
         return getPointDefaultsForType(this.infraOverrides, type);
+    }
+
+    private startDrawingLineDefaultTour() {
+        const bikePath = LINE_INFRASTRUCTURE_SPECS["bicycle_path"];
+        this.startDrawingWithConfig("bicycle_path", bikePath.color, bikePath.widthMeters * 2, true, true);
+    }
+
+    private setupGuidedTour(): void {
+        this.guidedTour = new GuidedTour(
+            [
+                {
+                    id: 'create-line-panel',
+                    title: 'Configure a Line',
+                    description: 'Pick an infrastructure type, width, color, or smoothing, then click Start Drawing. All configurations can be changed later.',
+                    selector: ['#btn-new-line', '#line-creation-panel'],
+                    advanceHint: 'Click Start Drawing, or press Next to start with a default bicycle path.',
+                    onEnter: () => {
+                        this.closeEverything();
+                        document.getElementById('btn-new-line')?.click();
+                    },
+                    onNext: () => {
+                        if (this.draw.getMode() !== 'draw_line_string') {
+                            this.panelManager.closeAll();
+                            this.startDrawingLineDefaultTour();
+                        }
+                    },
+                },
+                {
+                    id: 'draw-line-canvas',
+                    title: 'Draw Your Line',
+                    description: 'Click on the map to add points along your line. You can right click, double click,  press Enter, or Escape to finish.' +
+                        '\nYou can add new points, or move the existing ones via the inspector panel that will appear on the right.',
+                    dimmed: false,
+                    selector: ['#editor-controls'],
+                    advanceHint: 'Finish drawing your line to continue.',
+                },
+                {
+                    id: 'rect-select',
+                    title: 'Rectangle Select',
+                    description: 'Click and drag a box on the map with Rectangle Select to select multiple points' +
+                        ' at once. You can then move them around separately..',
+                    selector: '#btn-rect-select',
+                },
+                {
+                    id: 'measure-tool',
+                    title: 'Measure Distances',
+                    description: 'Use the Measure tool to check lengths and distances directly on the map.',
+                    selector: '#btn-measure',
+                },                {
+                    id: 'import-export',
+                    title: 'Import and Export',
+                    description: 'Download your saved date, or import a saved file to view or edit it.',
+                    selector: ['#btn-import', '#btn-export'],
+                },
+                {
+                    id: 'settings-panel',
+                    title: 'Settings',
+                    description: 'In the Settings, you can toggle labels on and off, clear your canvas, try some ' +
+                        'pre-made examples, or look at the welcome screen again.',
+                    selector: ['#btn-settings', '#settings-panel'],
+                    dimmed: true,
+                    onEnter: () => {
+                        this.closeEverything();
+                        this.panelManager.settingsPanel.toggle();
+                    },
+                },
+            ],
+            () => {
+                this.closeEverything();
+            }
+        );
     }
 }
 

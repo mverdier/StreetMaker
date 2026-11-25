@@ -1,8 +1,14 @@
+export interface WelcomeModalOptions {
+    onStartTour?: () => void;
+}
+
 export class WelcomeModal {
     private overlay: HTMLElement;
+    private onStartTour?: () => void;
 
-    constructor() {
+    constructor(options?: WelcomeModalOptions) {
         this.overlay = document.getElementById('welcome-modal-overlay') as HTMLElement;
+        this.onStartTour = options?.onStartTour;
         this.initListeners();
     }
 
@@ -20,6 +26,12 @@ export class WelcomeModal {
             if (e.key === 'Escape' && this.overlay && !this.overlay.classList.contains('hidden')) {
                 this.close();
             }
+        });
+
+        const tourBtn = document.getElementById('welcome-tour-btn');
+        tourBtn?.addEventListener('click', () => {
+            this.close();
+            this.onStartTour?.();
         });
     }
 

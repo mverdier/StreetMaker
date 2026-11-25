@@ -108,4 +108,33 @@ export function setupFileImportExport(actions: FileExportActions): void {
             alert(`Import failed: ${(error as Error).message}`);
         }
     });
+
+    const btnAmsterdamRoundabout = document.getElementById('btn-amsterdam-roundabout');
+    btnAmsterdamRoundabout?.addEventListener('click', () => {
+        loadExampleProject(actions, '../../resources/examples/example_amsterdam_roundabout.geojson');
+    })
+}
+
+async function loadExampleProject(actions: FileExportActions, fileName: string): Promise<void> {
+    try {
+        const response = await fetch(fileName);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch example GeoJSON (${response.status} ${response.statusText})`);
+        }
+
+        const blob = await response.blob();
+        const file = new File([blob], 'fileName', {
+            type: 'application/geo+json',
+        });
+
+        const geojson = await parseGeoJSONFile(file);
+        actions.setDrawData(geojson);
+        actions.handleGeometryChange();
+        actions.fitMapToGeoJSON(geojson);
+        saveProjectToLocalStorage(geojson);
+        console.log(`Successfully imported and saved ${geojson.features.length} feature(s).`);
+    } catch (error) {
+        console.error(error);
+        alert(`Import failed: ${(error as Error).message}`);
+    }
 }
