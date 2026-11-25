@@ -1,7 +1,9 @@
 import type { PolygonInfrastructureType } from '../config/infrastructure';
 import { POLYGON_INFRASTRUCTURE_SPECS, HEX_COLOR_REGEX } from '../config/infrastructure';
+import type {PolygonTypeOverride} from "../config/UserDefaults";
 
 export interface PolyCreationPanelCallbacks {
+    getTypeDefaults?: (type: PolygonInfrastructureType) => Required<PolygonTypeOverride>;
     onConfirm: (config: { infrastructureType: PolygonInfrastructureType; color: string, smooth: boolean }) => void;
 }
 
@@ -12,6 +14,7 @@ export class PolyCreationPanel {
     private inputColorHex: HTMLInputElement | null;
     private inputSmooth: HTMLInputElement | null;
     private callbacks: PolyCreationPanelCallbacks
+    private getTypeDefaults?: (type: PolygonInfrastructureType) => Required<PolygonTypeOverride>;
 
     constructor(callbacks: PolyCreationPanelCallbacks) {
         this.panelEl = document.getElementById('poly-creation-panel');
@@ -20,6 +23,7 @@ export class PolyCreationPanel {
         this.inputColorHex = document.getElementById('poly-panel-color-hex') as HTMLInputElement;
         this.inputSmooth = document.getElementById('poly-panel-smooth') as HTMLInputElement;
         this.callbacks = callbacks;
+        this.getTypeDefaults = callbacks.getTypeDefaults;
 
         this.populateSelectOptions();
         this.isolateEvents();
@@ -52,9 +56,16 @@ export class PolyCreationPanel {
 
     private populateDefaults(type: PolygonInfrastructureType): void {
         const spec = POLYGON_INFRASTRUCTURE_SPECS[type];
-        if (this.inputColorHex) this.inputColorHex.value = spec.color;
-        if (this.inputColorPicker) this.inputColorPicker.value = spec.color;
-        if (this.inputSmooth) this.inputSmooth.checked = spec.smooth;
+        const defaults = this.getTypeDefaults
+            ? this.getTypeDefaults(type)
+            : {
+                color: spec.color,
+                smooth: spec.smooth,
+            };
+
+        if (this.inputColorHex) this.inputColorHex.value = defaults.color;
+        if (this.inputColorPicker) this.inputColorPicker.value = defaults.color;
+        if (this.inputSmooth) this.inputSmooth.checked = defaults.smooth;
     }
 
     private bindEvents(callbacks: PolyCreationPanelCallbacks): void {

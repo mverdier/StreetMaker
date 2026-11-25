@@ -1,9 +1,11 @@
 import {type LineInfrastructureType, MARKING_TYPES, LINE_INFRASTRUCTURE_SPECS, HEX_COLOR_REGEX } from '../config/infrastructure';
+import type {LineTypeOverride} from "../config/UserDefaults";
 
 export interface LineCreationPanelOptions {
     title?: string;
     allowedTypes: LineInfrastructureType[];
     triggerButtonId: string;
+    getTypeDefaults?: (type: LineInfrastructureType) => Required<LineTypeOverride>;
     onConfirm: (config: { infrastructureType: LineInfrastructureType; color: string; widthMeters: number; isDouble: boolean, smooth: boolean }) => void;
     onClear?: () => void;
 }
@@ -20,6 +22,7 @@ export class LineCreationPanel {
 
     private allowedTypes: LineInfrastructureType[];
     private triggerButtonId: string;
+    private getTypeDefaults?: (type: LineInfrastructureType) => Required<LineTypeOverride>;
     private callbacks: {
         onConfirm: (config: { infrastructureType: LineInfrastructureType; color: string; widthMeters: number; isDouble: boolean; smooth: boolean }) => void;
         onClear?: () => void;
@@ -38,6 +41,7 @@ export class LineCreationPanel {
         this.allowedTypes = options.allowedTypes;
         this.triggerButtonId = options.triggerButtonId;
         this.callbacks = { onConfirm: options.onConfirm, onClear: options.onClear };
+        this.getTypeDefaults = options.getTypeDefaults;
 
         const defaultType = this.allowedTypes[0] || 'bicycle_path';
         const defaultSpec = LINE_INFRASTRUCTURE_SPECS[defaultType];
@@ -90,11 +94,20 @@ export class LineCreationPanel {
 
     private populateDefaults(type: LineInfrastructureType): void {
         const spec = LINE_INFRASTRUCTURE_SPECS[type];
-        if (this.inputWidth) this.inputWidth.value = spec.widthMeters.toString();
-        if (this.inputColorHex) this.inputColorHex.value = spec.color;
-        if (this.inputColorPicker) this.inputColorPicker.value = spec.color;
-        if (this.inputDoubleTrack) this.inputDoubleTrack.checked = spec.isDouble;
-        if (this.inputSmooth) this.inputSmooth.checked = spec.smooth;
+        const defaults = this.getTypeDefaults
+            ? this.getTypeDefaults(type)
+            : {
+                widthMeters: spec.widthMeters,
+                color: spec.color,
+                isDouble: spec.isDouble,
+                smooth: spec.smooth,
+            };
+
+        if (this.inputWidth) this.inputWidth.value = defaults.widthMeters.toString();
+        if (this.inputColorHex) this.inputColorHex.value = defaults.color;
+        if (this.inputColorPicker) this.inputColorPicker.value = defaults.color;
+        if (this.inputDoubleTrack) this.inputDoubleTrack.checked = defaults.isDouble;
+        if (this.inputSmooth) this.inputSmooth.checked = defaults.smooth;
         this.updateDoubleVisibility(type);
     }
 
@@ -123,6 +136,7 @@ export class LineCreationPanel {
                 delete this.panelEl.dataset.activeTrigger;
             } else {
                 this.populateLastConfig();
+                this.populateDefaults(this.lastConfig.infrastructureType);
                 this.panelEl.style.display = 'block';
                 this.panelEl.dataset.activeTrigger = this.triggerButtonId;
             }

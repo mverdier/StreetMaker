@@ -51,6 +51,13 @@ import {
 } from "./map/styles/ToolStyles";
 import {WelcomeModal} from "./ui/WelcomeModal";
 
+import {
+    getLineDefaultsForType, getPointDefaultsForType, getPolygonDefaultsForType,
+    loadInfraOverrides,
+    saveInfraOverrides,
+    type StoredInfraOverrides,
+} from './config/UserDefaults';
+
 export type { LineInfrastructureType };
 export { LINE_INFRASTRUCTURE_SPECS };
 
@@ -148,6 +155,7 @@ class RoadEditor {
     };
 
     private lastConfig: LastConfig | null = null;
+    private infraOverrides: StoredInfraOverrides = loadInfraOverrides();
 
     constructor(containerId: string) {
         this.map = new Map({
@@ -553,6 +561,9 @@ class RoadEditor {
             },
             onGlobalOpacityChange: (opacity) => this.setGlobalOverlayOpacity(opacity),
             closeEverything: () => this.closeEverything(),
+            getLineTypeDefaults: (type) => this.getLineTypeDefaults(type),
+            getPolygonTypeDefaults: (type) => this.getPolygonTypeDefaults(type),
+            getPointTypeDefaults: (type) => this.getPointTypeDefaults(type),
         });
     }
 
@@ -663,6 +674,8 @@ class RoadEditor {
     ): void {
         this.lastConfig = { kind: 'point', type, color, widthMeters, rotation };
         this.syncRepeatConfigButton();
+        this.infraOverrides.points[type] = { color, widthMeters, rotation };
+        saveInfraOverrides(this.infraOverrides);
 
         this.setDrawingCursorActive(true);
 
@@ -698,6 +711,8 @@ class RoadEditor {
     public startDrawingWithConfig(type: LineInfrastructureType, color: string, widthMeters: number, isDouble: boolean, smooth: boolean): void {
         this.lastConfig = { kind: 'line', type, color, widthMeters, isDouble, smooth };
         this.syncRepeatConfigButton();
+        this.infraOverrides.lines[type] = { color, widthMeters, isDouble, smooth };
+        saveInfraOverrides(this.infraOverrides);
 
         this.setDrawingCursorActive(true);
 
@@ -718,6 +733,8 @@ class RoadEditor {
     public startDrawingPolygonWithConfig(type: PolygonInfrastructureType, color: string, smooth: boolean): void {
         this.lastConfig = { kind: 'polygon', type, color, smooth };
         this.syncRepeatConfigButton();
+        this.infraOverrides.polygons[type] = { color, smooth };
+        saveInfraOverrides(this.infraOverrides);
 
         this.setDrawingCursorActive(true);
 
@@ -1157,6 +1174,18 @@ class RoadEditor {
                 }
             }
         });
+    }
+
+    public getLineTypeDefaults(type: LineInfrastructureType) {
+        return getLineDefaultsForType(this.infraOverrides, type);
+    }
+
+    public getPolygonTypeDefaults(type: PolygonInfrastructureType) {
+        return getPolygonDefaultsForType(this.infraOverrides, type);
+    }
+
+    public getPointTypeDefaults(type: PointInfrastructureType) {
+        return getPointDefaultsForType(this.infraOverrides, type);
     }
 }
 

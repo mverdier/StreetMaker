@@ -5,6 +5,7 @@ import { SettingsPanel } from './SettingsPanel';
 import { InspectorPanel } from './InspectorPanel';
 import { PointCreationPanel } from './PointCreationPanel';
 import { OpacityControl } from './OpacityControl';
+import type {LineTypeOverride, PointTypeOverride, PolygonTypeOverride} from "../config/UserDefaults";
 
 export interface PanelManagerOptions {
     onStartDrawingLine: (type: LineInfrastructureType, color: string, widthMeters: number, isDouble: boolean, smooth: boolean) => void;
@@ -18,6 +19,9 @@ export interface PanelManagerOptions {
     closeEverything: () => void;
     onMoveFeatureOrder: (direction: 'up' | 'down') => void;
     onToggleLabels: (enabled: boolean) => void;
+    getLineTypeDefaults?: (type: LineInfrastructureType) => Required<LineTypeOverride>;
+    getPolygonTypeDefaults?: (type: PolygonInfrastructureType) => Required<PolygonTypeOverride>;
+    getPointTypeDefaults?: (type: PointInfrastructureType) => Required<PointTypeOverride>;
 }
 
 export class PanelManager {
@@ -73,6 +77,7 @@ export class PanelManager {
             title: 'Create Lane',
             allowedTypes: LANE_TYPES,
             triggerButtonId: 'btn-new-line',
+            getTypeDefaults: options.getLineTypeDefaults,
             onConfirm: (config) => options.onStartDrawingLine(config.infrastructureType, config.color, config.widthMeters, config.isDouble, config.smooth),
         });
 
@@ -80,10 +85,12 @@ export class PanelManager {
             title: 'Create Markings',
             allowedTypes: MARKING_TYPES,
             triggerButtonId: 'btn-new-markings',
+            getTypeDefaults: options.getLineTypeDefaults,
             onConfirm: (config) => options.onStartDrawingLine(config.infrastructureType, config.color, config.widthMeters, config.isDouble, config.smooth),
         });
 
         this.polyCreationPanel = new PolyCreationPanel({
+            getTypeDefaults: options.getPolygonTypeDefaults,
             onConfirm: (config) => options.onStartDrawingPolygon(config.infrastructureType, config.color, config.smooth),
         });
 
@@ -95,6 +102,7 @@ export class PanelManager {
         });
 
         this.pointCreationPanel = new PointCreationPanel({
+            getTypeDefaults: options.getPointTypeDefaults,
             onConfirm: (config) => options.onStartDrawingPoint(config.infrastructureType, config.color, config.widthMeters, config.rotation),
         });
     }

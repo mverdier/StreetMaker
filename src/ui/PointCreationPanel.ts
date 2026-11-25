@@ -1,7 +1,9 @@
 import { SINGLE_POINT_TYPES, type PointInfrastructureType } from '../config/infrastructure';
 import { POINT_INFRASTRUCTURE_SPECS, HEX_COLOR_REGEX } from '../config/infrastructure';
+import type {PointTypeOverride} from "../config/UserDefaults";
 
 export interface PointCreationPanelCallbacks {
+    getTypeDefaults?: (type: PointInfrastructureType) => Required<PointTypeOverride>;
     onConfirm: (config: { infrastructureType: PointInfrastructureType; color: string; widthMeters: number, rotation: number}) => void;
 }
 
@@ -12,6 +14,7 @@ export class PointCreationPanel {
     private inputColorHex: HTMLInputElement | null;
     private inputWidth: HTMLInputElement | null;
     private callbacks: PointCreationPanelCallbacks;
+    private getTypeDefaults?: (type: PointInfrastructureType) => Required<PointTypeOverride>;
 
     private lastConfig = {
         infrastructureType: 'arrow_forward' as PointInfrastructureType,
@@ -27,9 +30,19 @@ export class PointCreationPanel {
         this.inputColorHex = document.getElementById('single-point-panel-color-hex') as HTMLInputElement;
         this.inputWidth = document.getElementById('single-point-panel-width') as HTMLInputElement;
         this.callbacks = callbacks;
-
+        this.getTypeDefaults = callbacks.getTypeDefaults;
 
         this.populateSelectOptions();
+        if (this.getTypeDefaults) {
+            const resolved = this.getTypeDefaults(this.lastConfig.infrastructureType);
+            this.lastConfig = {
+                ...this.lastConfig,
+                color: resolved.color,
+                widthMeters: resolved.widthMeters,
+                rotation: resolved.rotation,
+            };
+        }
+
         this.isolateEvents();
         this.bindEvents(callbacks);
     }
@@ -54,9 +67,17 @@ export class PointCreationPanel {
 
     private populateDefaults(type: PointInfrastructureType): void {
         const spec = POINT_INFRASTRUCTURE_SPECS[type];
-        if (this.inputColorHex) this.inputColorHex.value = spec.color;
-        if (this.inputColorPicker) this.inputColorPicker.value = spec.color;
-        if (this.inputWidth) this.inputWidth.value = spec.widthMeters.toString();
+        const defaults = this.getTypeDefaults
+            ? this.getTypeDefaults(type)
+            : {
+                color: spec.color,
+                widthMeters: spec.widthMeters,
+                rotation: 0,
+            };
+
+        if (this.inputColorHex) this.inputColorHex.value = defaults.color;
+        if (this.inputColorPicker) this.inputColorPicker.value = defaults.color;
+        if (this.inputWidth) this.inputWidth.value = defaults.widthMeters.toString();
     }
 
     private populateLastConfig(): void {
