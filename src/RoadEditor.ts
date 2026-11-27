@@ -1228,10 +1228,16 @@ class RoadEditor {
                     advanceHint: 'Finish drawing your line to continue.',
                 },
                 {
+                    id: 'create-other-infra',
+                    title: 'Create other infrastructure',
+                    description: 'Clicking any of these tabs will allow you to draw other types of infrastructure. Road markings, polygons, or placing single points such as traffic lights or bus labels.',
+                    selector: ['#btn-new-markings', '#btn-new-single-point', '#btn-new-poly'],
+                },
+                {
                     id: 'rect-select',
                     title: 'Rectangle Select',
                     description: 'Click and drag a box on the map with Rectangle Select to select multiple points' +
-                        ' at once. You can then move them around separately..',
+                        ' at once. You can then move them around separately.',
                     selector: '#btn-rect-select',
                 },
                 {
@@ -1239,7 +1245,8 @@ class RoadEditor {
                     title: 'Measure Distances',
                     description: 'Use the Measure tool to check lengths and distances directly on the map.',
                     selector: '#btn-measure',
-                },                {
+                },
+                {
                     id: 'import-export',
                     title: 'Import and Export',
                     description: 'Download your saved date, or import a saved file to view or edit it.',
