@@ -1222,7 +1222,7 @@ class RoadEditor {
                     id: 'draw-line-canvas',
                     title: 'Draw Your Line',
                     description: 'Click on the map to add points along your line. You can right click, double click,  press Enter, or Escape to finish.' +
-                        '\nYou can add new points, or move the existing ones via the inspector panel that will appear on the right.',
+                        ' You can add new points, or move the existing ones via the inspector panel that will appear on the right.',
                     dimmed: false,
                     selector: ['#editor-controls'],
                     advanceHint: 'Finish drawing your line to continue.',
@@ -1249,7 +1249,8 @@ class RoadEditor {
                 {
                     id: 'import-export',
                     title: 'Import and Export',
-                    description: 'Download your saved date, or import a saved file to view or edit it.',
+                    description: 'All of your data is stored on your browser. No accounts, no cloud, all local storage. We recommend exporting it to save your data to a file, that way you can always get it back later.',
+                    advanceHint: 'When you reload, it\'ll still be there unless the browser\'s data was cleared.',
                     selector: ['#btn-import', '#btn-export'],
                 },
                 {
