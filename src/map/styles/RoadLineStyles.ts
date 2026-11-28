@@ -79,7 +79,14 @@ export function getNativeRoadCenterlineLayerSpec(pxPerMeterZoom20: number): AddL
     };
 }
 
-export function getNativePedestrianCrossingLayerSpec(pxPerMeterZoom20: number): AddLayerObject {
+export function getNativePedestrianCrossingLayerSpec(
+    pxPerMeterZoom20: number,
+    defaultWidthMeters = 1.8
+): AddLayerObject {
+    const stripMeters = 0.2;
+    const safeWidth = Math.max(0.1, defaultWidthMeters);
+    const dashRatio = Number((stripMeters / safeWidth).toFixed(4));
+
     return {
         id: 'roads-native-crossing-layer',
         type: 'line',
@@ -98,9 +105,9 @@ export function getNativePedestrianCrossingLayerSpec(pxPerMeterZoom20: number): 
                 ['zoom'],
                 10, ['max', 1, ['/', ['*', ['coalesce', ['get', 'widthMeters'], 1.8], pxPerMeterZoom20], Math.pow(2, 10)]],
                 20, ['*', ['coalesce', ['get', 'widthMeters'], 1.8], pxPerMeterZoom20],
-                24, ['*', ['coalesce', ['get', 'widthMeters'], 0.3], pxPerMeterZoom20, 16],
+                24, ['*', ['coalesce', ['get', 'widthMeters'], 1.8], pxPerMeterZoom20, 16],
             ],
-            'line-dasharray': [0.1667, 0.1667],
+            'line-dasharray': [dashRatio, dashRatio],
             'line-opacity': 1,
         },
     };
